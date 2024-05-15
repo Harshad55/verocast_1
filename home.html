@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  <link rel="stylesheet" href="/static/css/home.css">
+  <title>Home</title>
+</head>
+<script src="goldapi.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+
+
+<body style="background-color: #EFF0EC;">
+  <nav class="navbar navbar-expand-lg bg-body-tertiary"
+    style="padding: 0%; width: 100%; height: 80px; background-image: linear-gradient(to right, #f7f6f0, #F1ED53); margin-bottom: 50px;">
+    <div class="container container-fluid" style="margin: 0; max-width: 100%;  padding-bottom: 5px;">
+      <a class="navbar-brand" href="#">
+        <img src="/static/img/gold_logo.png" alt="Image Description" style="width: 130px; height: 75px; position: absolute; top: 8px; left: 33px;">
+      </a>
+
+      
+      <form class="container-fluid" role="search" style="display: inline-flex; margin-left: 200px; ">
+        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" style="border-color: #261C00; background-color: #dddddd;">
+        <button class="btn btn-outline-success" type="submit" style="background-color: #574301; color: #fff; border-color: #574301;">Search</button>
+      </form>
+      <form class="container-fluid" style="margin-left: 200px;">
+        <a href="/"><button class="btn btn-outline-success me-2" type="button" style="width: 100px; background-color: #261C00; color: #fff; border-color: #261C00; float: right;">Logout</button></a>
+      </form>
+    </div>
+  </nav>
+  <div class="container" style="margin: 0%; margin-right: 0%; max-width: 100%; max-height: calc(100vh - 20px);">
+    <div class="row">
+      <div class="col-sm-2 left-menu card-container"
+          style="background-color: #ffff; position: absolute; top: 90px; left: 20px; border: 1px solid #dddddd; border-radius: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); height: fit-content; padding: 20px;">
+          <h3 style="color: #B8A611;">Gold Stock</h3>
+          <h4 style="color: #574301;">Live Price</h4>
+          <div class="d-flex flex-column align-items-center">
+              <button type="button" class="btn btn-outline-secondary btn-custom" style="background-color: #574301; width: 95%;">Stock Analysis</button>
+              <br>
+              <a href="/chart" style="margin-top: -5px;"><button type="button" class="btn btn-outline-secondary btn-custom" style="width: 103%;">Technical Analysis</button></a>
+          </div>
+      </div>
+  </div>
+  
+  </div>
+      <img src="/static/img/Invest.png" alt="Image Description" style="width: 225px; height: 264px; position: absolute; top: 340px; left: 10px;">
+      <div class="col-sm-9 right-content"
+        style="position: absolute; top: 90px; left: 22%;">
+        <div class="header">
+          <h1 style="color: #574301; background-color: #fff; padding: 4px; font-size: 35px; border-style: solid; border-color:#B8A611;"><b>Gold price forecast & price target</b></h1>
+        </div>
+        <div class="row" style="padding-left: 5px;">
+          <div class="col-4" style="position: relative;">
+            <h4 style="color: #877105; font-size: 20px; padding-left: 5px;"><b>Gold price analyst rating</b></h4>
+            <canvas id="recommendationChart" width="400" height="400" style="border: 1px solid #dddddd; border-radius: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); background-color: #fff;"></canvas>
+            <div id="recommendationStatement" class="recommendation" style="position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 24px;
+    font-weight: bold;
+    color: #574301;"></div>
+
+            <script>
+              // Function to fetch predicted opening and closing values from backend
+              async function fetchPredictionData() {
+                try {
+                  const response = await fetch('/predict_next_day');
+                  const data = await response.json();
+                  return data;
+                } catch (error) {
+                  console.error('Error fetching prediction data:', error);
+                }
+              }
+
+              // Function to update doughnut chart with recommendation
+              async function updateChart() {
+                const predictionData = await fetchPredictionData();
+                if (predictionData && predictionData.predicted_opening_price && predictionData.predicted_closing_price) {
+                  const predictedOpening = predictionData.predicted_opening_price;
+                  const predictedClosing = predictionData.predicted_closing_price;
+
+                  // Calculate percentage change
+                  const changePercentage = ((predictedClosing - predictedOpening) / predictedOpening) * 100;
+
+                  // Determine recommendation based on percentage change
+                  let recommendation;
+                  let backgroundColor;
+                  if (changePercentage > 0) {
+                    recommendation = 'Strong Buy';
+                    backgroundColor = '#00FF00'; // Blue color for Buy recommendation
+                  } else if (changePercentage < 0) {
+                    recommendation = 'Strong Sell';
+                    backgroundColor = '#ff6384'; // Red color for Sell recommendation
+                  } else {
+                    recommendation = 'Strong Hold';
+                    backgroundColor = '#ffce56'; // Yellow color for Hold recommendation
+                  }
+
+                  // Data for the doughnut chart
+                  const data = {
+                    labels: [recommendation],
+                    datasets: [{
+                      data: [Math.abs(changePercentage)], // Use the absolute value of changePercentage
+                      backgroundColor: [backgroundColor], // Use the determined background color
+                    }]
+                  };
+
+                  // Options for the doughnut chart
+                  const options = {
+                    cutoutPercentage: 70, // Size of the hole in the middle of the chart
+                    rotation: -Math.PI, // Start angle of the first data in the chart
+                    circumference: Math.PI, // Size of the circle
+                    legend: {
+                      display: false, // Hide legend
+                    }
+                  };
+
+                  // Get the canvas element
+                  const ctx = document.getElementById('recommendationChart').getContext('2d');
+                
+                  // Create the doughnut chart
+                  const myDoughnutChart = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: data,
+                    options: options
+                  });
+
+                  // Update recommendation statement
+                  const recommendationStatement = document.getElementById('recommendationStatement');
+                  recommendationStatement.innerHTML = `<span class="${recommendation.toLowerCase()}">${recommendation}</span>`;
+                }
+              }
+
+              // Call the updateChart function when the page loads
+              window.onload = updateChart;
+            </script>
+          </div>
+          <div class="col-8">
+            <h4 style="color: #877105; font-size: 20px; padding-left: 5px;"><b>Gold Related News:</b></h4>
+            <div style="width:100%; height: 400px; border: 1px solid #dddddd; border-radius: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); overflow-y: auto;">
+                {% for article in data.split('\n---\n') %}
+                    <div class="card" style="width: 34rem; margin: 10px; transition: transform 0.3s;">
+                        <div class="card-body" style="transition: background-color 0.3s;">
+                            <h5 class="card-title" style="font-weight: bold;">{{article.split(':')[0]}}</h5>
+                            <h6 class="card-subtitle mb-2 text-body-secondary">Card subtitle</h6>
+                            <p class="card-text">{{article.split(':')[1]}}</p>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+        
+        </div>
+        
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>

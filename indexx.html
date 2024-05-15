@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Stock Prediction</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+
+<body>
+    <nav class="navbar fixed-top">
+        <div class="container-fluid">
+            <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas"
+                data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar"
+                aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="offcanvas offcanvas-start text-bg-" tabindex="-1" id="offcanvasNavbar"
+                aria-labelledby="offcanvasNavbarLabel">
+                <div class="offcanvas-header">
+                    <img src="/static/img/gold_logo_1.png" alt="Image Description" style="width: 110px;height: auto;">
+                    <h5 class="offcanvas-title" id="offcanvasNavbarLabel">OROCAST</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"
+                        aria-label="Close"></button>
+                </div>
+                <div class="offcanvas-body">
+                    <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
+                        <li class="nav-item">
+                            <a class="nav-link active" aria-current="page" href="/home">Stock Analysis</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Technical Analysis</a>
+                        </li>
+                        
+                    </ul>
+                    
+                </div>
+            </div>
+        </div>
+    </nav>
+    <div class="container-fluid" style="width:95%; margin-top: 50px; border: 1px solid #dddddd; border-radius: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
+        <div id="candlestickChart"></div>
+        
+    </div>
+<style>
+</style>
+
+    <script>
+        // Function to fetch data from FastAPI endpoint
+        async function fetchData() {
+            try {
+                const response = await fetch('/predict_next_day');
+                const data = await response.json();
+                return data;
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        }
+
+        // Function to create candlestick graph with predicted prices
+        async function createCandlestickChart() {
+            try {
+                // Fetch data from FastAPI endpoint
+                const data = await fetchData();
+                // Extract data for candlestick chart
+                const dates = data.dates;
+                const opens = data.opens;
+                const highs = data.highs;
+                const lows = data.lows;
+                const closes = data.closes;
+                const predictedOpeningPrice = data.predicted_opening_price;
+                const predictedClosingPrice = data.predicted_closing_price;
+
+                // Create candlestick trace
+                const traceCandlestick = {
+                    x: dates,
+                    close: closes,
+                    high: highs,
+                    low: lows,
+                    open: opens,
+                    type: 'candlestick',
+                    xaxis: 'x',
+                    yaxis: 'y',
+                    name: 'Actual Prices'
+                };
+
+                // Create trace for predicted closing prices
+                const tracePredictedClosing = {
+                    x: dates.concat([dates[dates.length - 1]]),
+                    y: closes.concat(predictedClosingPrice),
+                    type: 'scatter',
+                    mode: 'lines',
+                    name: 'Predicted Closing Prices',
+                    line: { color: 'blue', width: 2 }
+                };
+
+                // Create trace for predicted opening price
+                const tracePredictedOpening = {
+                    x: dates.concat([dates[dates.length - 1]]),
+                    y: opens.concat(predictedOpeningPrice),
+                    type: 'scatter',
+                    mode: 'lines',
+                    name: 'Predicted Opening Prices',
+                    line: { color: 'green', width: 2, dash: 'dash' }
+                };
+
+                // Combine candlestick trace with predicted closing prices and predicted opening prices
+                const dataCandlestick = [traceCandlestick, tracePredictedClosing, tracePredictedOpening];
+
+                // Create layout for candlestick chart
+                const layoutCandlestick = {
+                    title: 'Candlestick Chart with Predicted Prices',
+                    xaxis: {
+                        autorange: true,
+                        rangeslider: { visible: false },
+                        type: 'date'
+                    },
+                    yaxis: {
+                        autorange: true,
+                        type: 'linear'
+                    },
+                    hovermode: 'x unified'
+                };
+
+                // Plot candlestick chart with predicted prices
+                Plotly.newPlot('candlestickChart', dataCandlestick, layoutCandlestick);
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        // Call function to create candlestick chart with predicted prices
+        createCandlestickChart();
+    </script>
+</body>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+    crossorigin="anonymous"></script>
+
+</html>
