@@ -1,0 +1,132 @@
+*{
+    margin: 0;
+    padding: 0;
+    font-family: 'Poppins', sans-serif;
+}
+body{
+    overflow: hidden;
+}
+.custom_container{
+    width: 100%;
+    height: 100vh;
+    background-color: azure;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+}
+.i{
+    background-color: azure;
+}
+.form-box{
+    width: 90%;
+    max-width: 450px;
+    min-width: 350px;
+    background-color: azure;
+    padding: 20px;
+    text-align: center;
+    border-radius: 10px;
+    box-shadow: -2px 2px 15px rgba(0,0,0.5);
+}
+.form-box h1{
+    font-size: 30px;
+    color: green;
+}
+.form-box .underline{
+    width: 30px;
+    height:4px;
+    background: green;
+    margin: 10px auto 5px auto;
+    border-radius: 5px;
+    transition: transform .5s;
+    color: azure;
+}
+.input-field{
+    background: ivory;
+    margin: 15px 0;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    border: 0;
+    outline: 0;
+    
+
+    max-height: 60px;
+    transition: max-height 0.5s;
+    overflow: hidden;
+}
+.input-field input{
+    width: 120%;
+    background: transparent;
+    border: 0;
+    outline: 0;
+    padding: 18px 15px;
+    margin: 10%;
+} 
+.input-field i{
+    margin-left: 15px;
+    color:brown;
+
+}
+form p{
+    text-align: left;
+    font-size: 13px;
+    padding:7px
+}
+form p a{
+    text-decoration: none;
+    color:green;
+    
+}
+.inputgroup{
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: stretch;
+    width: 100%;
+    margin: 10%;
+}
+
+
+.btn-field{
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+}
+
+.Signupbtn{
+    flex-basis: 48%;
+    background: green;
+    color: white;
+    height: 40px;
+    border-radius: 20px;
+    border: 0;
+    outline:0;
+    cursor: pointer;
+}
+
+.Disable-signinbtn{
+    flex-basis: 48%;
+    background: green;
+    color: white;
+    height: 40px;
+    border-radius: 20px;
+    border: 0;
+    outline:0;
+    cursor: pointer;
+
+}
+
+.signinbtn{
+    padding-left: 39px;
+    padding-right: 39px;
+
+}
+.Disable-signinbtn:active{
+    
+        background-color: #3e8e41;
+        box-shadow: 0 5px #666;
+        transform: translateY(4px);
+      
+}
+/* size:  */
